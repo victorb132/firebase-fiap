@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../../config/firebase';
+
 import {
   Container,
   Title,
@@ -8,9 +11,29 @@ import {
   ButtonTitle
 } from './styles';
 
-export default function Login() {
+export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const loginUser = async () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        console.log(userCredential)
+
+        const user = userCredential.user;
+        console.log(user)
+        if (user.apiKey !== null) {
+          navigation.navigate('Home');
+        }
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
+      });
+  };
 
   return (
     <Container>
@@ -29,10 +52,10 @@ export default function Login() {
         value={password}
       />
       <ButtonContainer>
-        <Button>
+        <Button onPress={loginUser}>
           <ButtonTitle>Logar</ButtonTitle>
         </Button>
-        <Button>
+        <Button onPress={() => navigation.navigate('Register')}>
           <ButtonTitle>Registrar</ButtonTitle>
         </Button>
       </ButtonContainer>
