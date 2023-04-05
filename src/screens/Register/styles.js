@@ -8,13 +8,13 @@ export const Container = styled.View`
 
 export const Title = styled.Text`
   font-size: 40px;
-  color: #D3D3D3;
+  color: #000000;
 `;
 
 export const Input = styled.TextInput`
   padding: 0 20px;
   width: 200px;
-  border: 1px solid #D3D3D3;
+  border: 1px solid #000000;
   margin: 10px 0;
   border-radius: 10px;
 `;
@@ -27,7 +27,7 @@ export const ButtonContainer = styled.View`
 
 export const Button = styled.TouchableOpacity`
   width: 200px;
-  background-color: #D3D3D3;
+  background-color: #000000;
   padding: 10px 0;
   border-radius: 10px;
 `;
