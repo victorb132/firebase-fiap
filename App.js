@@ -1,5 +1,8 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { onAuthStateChanged } from 'firebase/auth'
+import { useEffect, useState } from 'react';
+import { auth } from './src/config/firebase';
 
 import Login from './src/screens/Login';
 import Home from './src/screens/Home';
@@ -8,6 +11,14 @@ import Register from './src/screens/Register';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const subscriber = onAuthStateChanged(auth, setUser);
+
+    return subscriber
+  }, [])
+
 
   function LoginScreens() {
     return (
@@ -32,7 +43,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <LoginScreens />
+      {user ? <LoggedScreens /> : <LoginScreens />}
     </NavigationContainer>
   );
 }

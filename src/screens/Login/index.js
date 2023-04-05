@@ -18,19 +18,19 @@ export default function Login({ navigation }) {
   const loginUser = async () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
-        console.log(userCredential)
 
         const user = userCredential.user;
-        console.log(user)
+        console.log(user.appName)
         if (user.apiKey !== null) {
-          navigation.navigate('Home');
+          // navigation.navigate('Home');
         }
         // ...
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        console.log(errorCode)
+        console.log(errorMessage)
         // ..
       });
   };
