@@ -43,7 +43,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      {user ? <LoggedScreens /> : <LoginScreens />}
+      {!user ? <LoggedScreens /> : <LoginScreens />}
     </NavigationContainer>
   );
 }
