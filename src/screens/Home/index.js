@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { db } from "../../config/firebase";
+import { query, getDocs, collection, addDoc, deleteDoc, doc } from "firebase/firestore";
 
 import {
   Keyboard,
@@ -61,22 +63,44 @@ export default function Home() {
   }
 
   useEffect(() => {
-    async function carregaDados() {
-      const task = await AsyncStorage.getItem("task");
+    async function carregaDadosFirebase() {
+      const q = query(collection(db, "tasks"));
 
-      if (task) {
-        setTask(JSON.parse(task));
-      }
+      const querySnapshot = await getDocs(q);
+
+      let tasks = [];
+
+      querySnapshot.forEach((doc) => {
+        tasks.push(doc.data());
+      });
+      setTask(tasks);
+      console.log('tasks', tasks)
     }
-    carregaDados();
+    carregaDadosFirebase();
   }, []);
 
-  useEffect(() => {
-    async function salvaDados() {
-      AsyncStorage.setItem("task", JSON.stringify(task));
-    }
-    salvaDados();
-  }, [task]);
+  let addTaskFirebase = async () => {
+    let todoTask = {
+      id: Math.random().toString(36),
+      task: newTask,
+    };
+    const docRef = await addDoc(collection(db, "tasks"), todoTask);
+    todoTask.id = docRef.id;
+
+    let updatedTasks = [...task, todoTask];
+    updatedTasks.push(todoTask);
+
+    setTask(updatedTasks);
+    setNewTask("");
+
+    Keyboard.dismiss();
+  };
+
+  let deleteTask = async (taskId) => {
+    await deleteDoc(doc(db, "tasks", taskId));
+    let updatedTasks = [...task].filter((item) => item.id != taskId);
+    setTask(updatedTasks);
+  };
 
   return (
     <>
@@ -90,12 +114,12 @@ export default function Home() {
           <Body>
             <List
               data={task}
-              keyExtractor={item => item.toString()}
+              keyExtractor={item => item.id}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
                 <ContainerList>
-                  <Text>{item}</Text>
-                  <Icon onPress={() => removeTask(item)}>
+                  <Text>{item.task}</Text>
+                  <Icon onPress={() => deleteTask(item.id)}>
                     <MaterialIcons
                       name="delete-forever"
                       size={25}
@@ -116,7 +140,7 @@ export default function Home() {
               maxLength={25}
               onChangeText={text => setNewTask(text)}
             />
-            <Button onPress={() => addTask()}>
+            <Button onPress={() => addTaskFirebase()}>
               <Ionicons name="ios-add" size={20} color="white" />
             </Button>
           </Form>
